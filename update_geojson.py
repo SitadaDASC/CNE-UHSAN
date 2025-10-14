@@ -7,12 +7,12 @@ def coerce_float(v):
     try: return float(s)
     except: return None
 
-def autodetect(columns):
-    lat_cand = {"lat","latitude","latitud","latitud_decimal","y"}
-    lon_cand = {"lon","lng","long","longitud","x"}
-    lower = {c.lower(): c for c in columns}
-    lat = next((lower[c] for c in lower if c in lat_cand), None)
-    lon = next((lower[c] for c in lower if c in lon_cand), None)
+def autodetect(cols):
+    lat_c = {"lat","latitude","latitud","latitud_decimal","y"}
+    lon_c = {"lon","lng","long","longitud","x"}
+    lower = {c.lower(): c for c in cols}
+    lat = next((lower[c] for c in lower if c in lat_c), None)
+    lon = next((lower[c] for c in lower if c in lon_c), None)
     return lat, lon
 
 def main():
@@ -20,12 +20,11 @@ def main():
     out = os.getenv("OUTPUT_PATH","docs/CNE-UHSAN.geojson")
     force_lon = os.getenv("POINT_LON_FIELD","").strip()
     force_lat = os.getenv("POINT_LAT_FIELD","").strip()
+    input_epsg = os.getenv("INPUT_EPSG","").strip()  # ej: "5367"
 
-    if not url:
-        raise SystemExit("Falta SHEET_TSV_URL")
+    if not url: raise SystemExit("Falta SHEET_TSV_URL")
 
-    r = requests.get(url, timeout=60)
-    r.raise_for_status()
+    r = requests.get(url, timeout=60); r.raise_for_status()
     df = pd.read_csv(io.StringIO(r.text), sep="\t")
 
     if force_lat and force_lon and force_lat in df.columns and force_lon in df.columns:
@@ -39,17 +38,24 @@ def main():
     df["_lat"] = df[lat_col].apply(coerce_float)
     df["_lon"] = df[lon_col].apply(coerce_float)
     df = df.dropna(subset=["_lat","_lon"])
+    if df.empty: raise SystemExit("No hay filas válidas con coordenadas.")
+
+    # Reproyección si INPUT_EPSG != 4326
+    coords = list(zip(df["_lon"], df["_lat"]))
+    if input_epsg and input_epsg != "4326":
+        from pyproj import Transformer
+        tr = Transformer.from_crs(f"EPSG:{input_epsg}", "EPSG:4326", always_xy=True)
+        coords = [tr.transform(x, y) for (x, y) in coords]  # → (lon, lat) en grados
 
     features = []
-    for _, row in df.iterrows():
-        props = {k: (None if pd.isna(v) else v) for k,v in row.items()
+    for (_, row), (lon4326, lat4326) in zip(df.iterrows(), coords):
+        props = {k: (None if pd.isna(v) else v) for k, v in row.items()
                  if k not in ["_lat","_lon"]}
-        feat = {
-            "type": "Feature",
-            "geometry": {"type":"Point","coordinates":[row["_lon"], row["_lat"]]},
+        features.append({
+            "type":"Feature",
+            "geometry":{"type":"Point","coordinates":[lon4326, lat4326]},
             "properties": props
-        }
-        features.append(feat)
+        })
 
     geojson = {"type":"FeatureCollection","name":"CNE-UHSAN","features":features}
     p = pathlib.Path(out); p.parent.mkdir(parents=True, exist_ok=True)
@@ -59,4 +65,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
