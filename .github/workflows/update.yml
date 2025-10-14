@@ -25,13 +25,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generar GeoJSON desde Google Sheets TSV
-        env:
-          SHEET_TSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTocrY0PEegkkycnpJ4aJ_dkACIX5wxrMbxsGx0P5spGidz5N058pO0UAGbDbXTBuJTyKYN1Phkbj5K/pub?gid=0&single=true&output=tsv"
-          OUTPUT_PATH: "docs/CNE-UHSAN.geojson"
-          # POINT_LAT_FIELD: ""   # opcional: fuerza nombre de columna
-          # POINT_LON_FIELD: ""   # opcional: fuerza nombre de columna
-        run: python update_geojson.py
+- name: Generar GeoJSON desde Google Sheets TSV
+  env:
+    SHEET_TSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTocrY0PEegkkycnpJ4aJ_dkACIX5wxrMbxsGx0P5spGidz5N058pO0UAGbDbXTBuJTyKYN1Phkbj5K/pub?gid=0&single=true&output=tsv"
+    OUTPUT_PATH: "docs/CNE-UHSAN.geojson"
+    POINT_LON_FIELD: "X"
+    POINT_LAT_FIELD: "Y"
+    INPUT_EPSG: "5367"
+  run: python update_geojson.py
 
       - name: Commit si hay cambios
         run: |
