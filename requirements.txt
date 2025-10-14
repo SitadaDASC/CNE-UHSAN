@@ -1,5 +1,2 @@
 pandas
-geopandas
-shapely
-pyproj
 requests
