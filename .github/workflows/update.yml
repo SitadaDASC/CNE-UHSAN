@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "21 12 * * *"  # diario ~06:21 CR
 
+permissions:
+  contents: write  # ← necesario para hacer commit/push
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -26,8 +29,9 @@ jobs:
         env:
           SHEET_TSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTocrY0PEegkkycnpJ4aJ_dkACIX5wxrMbxsGx0P5spGidz5N058pO0UAGbDbXTBuJTyKYN1Phkbj5K/pub?gid=0&single=true&output=tsv"
           OUTPUT_PATH: "docs/CNE-UHSAN.geojson"
-        run: |
-          python update_geojson.py
+          # POINT_LAT_FIELD: ""   # opcional: fuerza nombre de columna
+          # POINT_LON_FIELD: ""   # opcional: fuerza nombre de columna
+        run: python update_geojson.py
 
       - name: Commit si hay cambios
         run: |
@@ -36,3 +40,4 @@ jobs:
           git add docs/CNE-UHSAN.geojson
           git diff --cached --quiet || git commit -m "chore: actualizar CNE-UHSAN.geojson (auto)"
           git push
+
