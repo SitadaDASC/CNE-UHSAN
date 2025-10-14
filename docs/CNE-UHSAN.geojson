@@ -1,1 +1,1 @@
-{ "type": "FeatureCollection", "name": "CNE-UHSAN", "features": [] }
+{"type": "FeatureCollection", "name": "CNE-UHSAN", "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [412976.0, 1186827.0]}, "properties": {"ID": "3470-2025", "OFICIO SOLICITUD": "CNE-UGPR-OF-2942-2025", "SOLICITANTE": "Municipalidad de Guatuso", "Tipo": "Primer impacto", "RÃ­o ": "RÃ­o Frio ", "X": 412976, "Y": 1186827}}]}
