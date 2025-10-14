@@ -27,7 +27,7 @@ jobs:
 
       - name: Generar GeoJSON desde Google Sheets TSV
         env:
-          SHEET_TSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTocrY0PEegkkycnpJ4aJ_dkACIX5wxrMbxsGx0P5spGidz5N058pO0UAGbDbXTBuJTyKYN1Phkbj5K/pub?gid=0&single=true&output=tsv"
+          SHEET_TSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9pLqOjHIgEKADJ2Aa2EFJukOClpbJk6fShhi4M6jUyuDFsRU7WvEZ13gsUswKudI70dWNIm8Wypsp/pub?gid=0&single=true&output=tsv"
           OUTPUT_PATH: "docs/CNE-UHSAN.geojson"
           POINT_LON_FIELD: "X"
           POINT_LAT_FIELD: "Y"
