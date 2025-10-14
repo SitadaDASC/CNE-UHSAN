@@ -3,7 +3,7 @@ name: Actualizar GeoJSON automático
 on:
   workflow_dispatch:
   schedule:
-    - cron: "21 12 * * *"  # diario ~06:21 CR
+    - cron: "5 * * * *"   # cada hora al minuto 5 (UTC)
 
 permissions:
   contents: write
